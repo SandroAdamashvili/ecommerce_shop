@@ -1,12 +1,15 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import CartIcon from "../assets/icon-cart.svg";
+import PlusIcon from "../assets/icon-plus.svg";
+import MinusIcon from "../assets/icon-minus.svg";
+import Header from "./Header";
 
-export default function ItemDesc({ productImg, productTitle, productDesc }) {
+export default function ItemDesc() {
   const { id } = useParams();
   const [product, setProduct] = useState({});
-  let navigate = useNavigate();
+  const [quantity, setQuantity] = useState(localStorage.getItem(id) || 0);
 
   useEffect(() => {
     async function fetchData() {
@@ -22,9 +25,19 @@ export default function ItemDesc({ productImg, productTitle, productDesc }) {
     console.log(product);
   }, []);
 
+  function handleQuantity(operator) {
+    let qty = quantity;
+    operator == "+" ? qty++ : qty--;
+    setQuantity(qty);
+    localStorage.setItem(id, qty);
+  }
+
+  console.log(quantity);
+
   return (
     <>
-      <div className="flex flex-row justify-center items-center gap-48 mx-16 my-24">
+      <Header />
+      <div className="flex flex-row justify-center items-center gap-48 mx-16 mt-24">
         <img
           src={product.thumbnail}
           alt="product image"
@@ -40,10 +53,31 @@ export default function ItemDesc({ productImg, productTitle, productDesc }) {
 
           <h1 className="text-2xl font-bold">${product.price}</h1>
           <p>{product.description}</p>
-          <div className="w-64 h-14 flex flex-row justify-center items-center gap-6 rounded-4xl bg-yellow-400 mt-5">
-            <img src={CartIcon} alt="cart icon" />
-            <h1>Add to cart</h1>
-          </div>
+          {quantity == 0 ? (
+            <div
+              className="w-64 h-14 flex flex-row justify-center items-center gap-6 rounded-4xl bg-yellow-400 mt-5 hover:cursor-pointer hover:bg-yellow-300"
+              onClick={() => setQuantity(1)}
+            >
+              <img src={CartIcon} alt="cart icon" />
+              <h1 className="font-semibold">Add to cart</h1>
+            </div>
+          ) : (
+            <div className="w-64 h-14 flex flex-row justify-center items-center gap-6 rounded-4xl bg-gray-300 mt-5">
+              <img
+                src={MinusIcon}
+                alt="minus icon"
+                onClick={() => handleQuantity("-")}
+                className="mr-4 hover:cursor-pointer"
+              />
+              <h1 className="text-xl font-bold">{quantity}</h1>
+              <img
+                src={PlusIcon}
+                alt="plus icon"
+                onClick={() => handleQuantity("+")}
+                className="ml-4 hover:cursor-pointer"
+              />
+            </div>
+          )}
         </div>
       </div>
     </>
