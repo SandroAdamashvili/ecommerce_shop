@@ -1,13 +1,14 @@
 import axios from "axios";
 import Header from "./Header";
 import { useEffect, useState } from "react";
-import PlusIcon from "../assets/icon-plus.svg";
-import MinusIcon from "../assets/icon-minus.svg";
+import RemoveIcon from "../assets/icon-delete.svg";
+import SuccessModal from "./SuccessModal";
 
 export default function Cart() {
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true); // Added loading state
-  const keys = Object.keys(localStorage);
+  const [loading, setLoading] = useState(true);
+  const [keys, setKeys] = useState(Object.keys(localStorage));
+  const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -17,19 +18,16 @@ export default function Cart() {
       } catch (error) {
         console.error("Error fetching data: ", error);
       } finally {
-        setLoading(false); // Set loading to false once data is fetched
+        setLoading(false);
       }
     }
 
     fetchData();
   }, []);
 
-  function handleQuantity(operator, itemId) {
-    let qty = localStorage.getItem(itemId);
-    operator == "+" ? qty++ : qty--;
-    qty == 0
-      ? localStorage.removeItem(itemId)
-      : localStorage.setItem(itemId, qty);
+  function handleRemove(itemId) {
+    localStorage.removeItem(itemId);
+    setKeys(Object.keys(localStorage));
   }
 
   if (loading) {
@@ -43,8 +41,15 @@ export default function Cart() {
 
   return (
     <>
+      <SuccessModal
+        open={modalOpen}
+        className={
+          modalOpen &&
+          "modal outline-none z-10 w-1/3 h-80 rounded-2xl flex items-center justify-center fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+        }
+      />
       <Header cart={false} />
-      <div className="flex flex-col gap-5 justify-center items-center my-10">
+      <div className="flex flex-col gap-5 justify-center items-center mt-10 mb-48">
         {keys.length === 0 ? (
           <p>Your cart is empty</p>
         ) : (
@@ -55,14 +60,13 @@ export default function Cart() {
             >
               <div className="flex flex-row gap-8 justify-center items-center">
                 <img
-                  src={data[item - 1]?.thumbnail} // Use optional chaining to avoid accessing undefined
+                  src={data[item - 1]?.thumbnail}
                   alt="item image"
                   className="w-30"
                 />
                 <div>
                   <h3 className="text-lg text-yellow-700">
                     {data[item - 1]?.title}{" "}
-                    {/* Use optional chaining here as well */}
                   </h3>
                   <p className="font-semibold text-md">
                     {data[item - 1]?.price}$ x {localStorage.getItem(item)}
@@ -70,25 +74,26 @@ export default function Cart() {
                 </div>
               </div>
 
-              <div className="w-32 h-14 flex flex-row justify-center items-center gap-3 rounded-4xl border border-gray-300 mt-5">
-                <img
-                  src={MinusIcon}
-                  alt="minus icon"
-                  onClick={() => handleQuantity("-", item)}
-                  className="mr-4 hover:cursor-pointer"
-                />
-                <h1 className="text-xl font-bold">
-                  {localStorage.getItem(item)}
-                </h1>
-                <img
-                  src={PlusIcon}
-                  alt="plus icon"
-                  onClick={() => handleQuantity("+", item)}
-                  className="ml-4 hover:cursor-pointer"
-                />
-              </div>
+              <img
+                src={RemoveIcon}
+                alt="remove icon"
+                className="mr-10 h-6 hover:cursor-pointer"
+                onClick={() => handleRemove(item)}
+              />
             </div>
           ))
+        )}
+        {keys.length !== 0 && (
+          <button
+            className="w-48 p-2 text-2xl font-semibold rounded-4xl fixed bottom-20 bg-yellow-200 hover:cursor-pointer hover:bg-yellow-300"
+            onClick={() => {
+              localStorage.clear();
+              setKeys([]);
+              setModalOpen(true);
+            }}
+          >
+            Pay
+          </button>
         )}
       </div>
     </>
