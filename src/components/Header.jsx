@@ -1,28 +1,14 @@
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import CartIcon from "../assets/icon-cart.svg";
-import { useState, useEffect } from "react";
-import RemoveIcon from "../assets/icon-delete.svg";
+import { useState } from "react";
+import useGetData from "../hooks/useGetData";
 
 export default function Header({ cart }) {
   const [cartOpen, setCartOpen] = useState(false);
-  const [data, setData] = useState([]);
+  const data = useGetData();
   let navigate = useNavigate();
   const keys = Object.keys(localStorage);
   console.log(keys);
-
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const response = await axios.get("https://dummyjson.com/products");
-        setData(response.data.products);
-      } catch (error) {
-        console.error("Error fetching data: ", error);
-      }
-    }
-
-    fetchData();
-  }, []);
 
   return (
     <>

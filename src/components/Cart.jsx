@@ -1,42 +1,17 @@
-import axios from "axios";
 import Header from "./Header";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import RemoveIcon from "../assets/icon-delete.svg";
 import SuccessModal from "./SuccessModal";
+import useGetData from "../hooks/useGetData";
 
 export default function Cart() {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const data = useGetData();
   const [keys, setKeys] = useState(Object.keys(localStorage));
   const [modalOpen, setModalOpen] = useState(false);
-
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const response = await axios.get("https://dummyjson.com/products");
-        setData(response.data.products);
-      } catch (error) {
-        console.error("Error fetching data: ", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchData();
-  }, []);
 
   function handleRemove(itemId) {
     localStorage.removeItem(itemId);
     setKeys(Object.keys(localStorage));
-  }
-
-  if (loading) {
-    return (
-      <div>
-        <Header cart={false} />
-        <p>Loading cart items...</p>
-      </div>
-    );
   }
 
   return (

@@ -1,25 +1,10 @@
-import axios from "axios";
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "./Header";
+import useGetData from "../hooks/useGetData";
 
 export default function Home() {
-  const [data, setData] = useState([]);
+  const data = useGetData();
   let navigate = useNavigate();
-
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const response = await axios.get("https://dummyjson.com/products");
-        setData(response.data.products);
-      } catch (error) {
-        console.error("Error fetching data: ", error);
-      }
-    }
-
-    fetchData();
-    console.log(data);
-  }, []);
 
   return (
     <>
