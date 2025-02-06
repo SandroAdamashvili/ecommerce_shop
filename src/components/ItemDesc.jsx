@@ -9,7 +9,9 @@ import Header from "./Header";
 export default function ItemDesc() {
   const { id } = useParams();
   const [product, setProduct] = useState({});
-  const [quantity, setQuantity] = useState(localStorage.getItem(id) || 0);
+  const [quantity, setQuantity] = useState(
+    localStorage.getItem(id) ? localStorage.getItem(id) : 0
+  );
 
   useEffect(() => {
     async function fetchData() {
@@ -26,17 +28,17 @@ export default function ItemDesc() {
   }, []);
 
   function handleQuantity(operator) {
-    let qty = quantity;
+    let qty = localStorage.getItem(id);
     operator == "+" ? qty++ : qty--;
     setQuantity(qty);
-    localStorage.setItem(id, qty);
+    qty == 0 ? localStorage.removeItem(id) : localStorage.setItem(id, qty);
   }
 
   console.log(quantity);
 
   return (
     <>
-      <Header />
+      <Header cart={true} />
       <div className="flex flex-row justify-center items-center gap-48 mx-16 mt-24">
         <img
           src={product.thumbnail}
@@ -56,7 +58,12 @@ export default function ItemDesc() {
           {quantity == 0 ? (
             <div
               className="w-64 h-14 flex flex-row justify-center items-center gap-6 rounded-4xl bg-yellow-400 mt-5 hover:cursor-pointer hover:bg-yellow-300"
-              onClick={() => setQuantity(1)}
+              onClick={() =>
+                setQuantity(() => {
+                  localStorage.setItem(id, 1);
+                  return 1;
+                })
+              }
             >
               <img src={CartIcon} alt="cart icon" />
               <h1 className="font-semibold">Add to cart</h1>

@@ -23,9 +23,9 @@ export default function Home() {
 
   return (
     <>
-      <Header />
+      <Header cart={true} />
       <div className="flex justify-center">
-        <div className="flex flex-row gap-10 w-3/4 flex-wrap justify-center mt-20">
+        <div className="flex flex-row gap-10 w-3/4 flex-wrap justify-center my-20">
           {data.map((item) => (
             <div
               className=" w-[300px] text-wrap text-center p-5 border rounded-2xl flex items-center flex-col hover:cursor-pointer border-gray-300 shadow-sm shadow-yellow-100 bg-gray-50 hover:shadow-xl z-0"
